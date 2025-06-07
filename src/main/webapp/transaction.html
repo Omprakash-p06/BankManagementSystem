@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Transactions</title>
+    <style>
+        .container { max-width: 500px; margin: 20px auto; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input[type="number"] { width: 100%; padding: 8px; }
+        button { padding: 10px 20px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Make a Transaction</h1>
+    <form id="transactionForm">
+        <div class="form-group">
+            <label>Account Number:</label>
+            <input type="number" id="accno" required>
+        </div>
+        <div class="form-group">
+            <label>Amount:</label>
+            <input type="number" id="amount" step="0.01" required>
+        </div>
+        <div class="form-group">
+            <label>Transaction Type:</label>
+            <select id="transactionType" required>
+                <option value="DEPOSIT">Deposit</option>
+                <option value="WITHDRAWAL">Withdrawal</option>
+            </select>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="message"></div>
+    <a href="dashboard.html">Back to Dashboard</a>
+</div>
+
+<script>
+    document.getElementById("transactionForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const transactionData = {
+            accno: document.getElementById("accno").value,
+            amount: parseFloat(document.getElementById("amount").value),
+            type: document.getElementById("transactionType").value
+        };
+
+        try {
+            const response = await fetch("http://localhost:8080/BankManagementSystem/api/transaction", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(transactionData),
+                credentials: 'include'
+            });
+
+            const result = await response.json();
+            document.getElementById("message").textContent =
+                response.ok ? "Transaction successful!" : result.error;
+
+            if (response.ok) setTimeout(() => window.location.href = "dashboard.html", 1500);
+
+        } catch (error) {
+            document.getElementById("message").textContent = "Transaction failed!";
+            console.error("Error:", error);
+        }
+    });
+</script>
+</body>
+</html>

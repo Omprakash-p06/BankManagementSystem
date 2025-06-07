@@ -1,0 +1,57 @@
+# Build output directories (universally ignore 'target' folders)
+**/target/
+**/build/ # For other build systems like Gradle if present
+
+# Compiled class files
+*.class
+
+# Package Files (JAR, WAR, EAR, ZIP archives of releases)
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Logs
+*.log
+logs/
+**/logs/
+
+# IDE specific files (common for IntelliJ, Eclipse, NetBeans, VS Code)
+.idea/
+*.iws
+*.iml
+*.ipr
+.classpath
+.project
+.settings/
+.apt_generated/
+.factorypath
+.springBeans
+.sts4-cache/
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+.vscode/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Sensitive Data / Configuration (IMPORTANT!)
+# Your application.properties should generally not contain real passwords.
+# If it does, and you want to commit the file, ensure sensitive values are placeholders
+# and real values are provided via environment variables during deployment.
+# For example, if you have a real DB password in application.properties,
+# you would uncomment the line below and ensure it's NEVER committed.
+# src/main/resources/application.properties
+
+# Database related files (if local DB data is generated within project)
+*.db
+*.sqlite
+*.sql.zip
+*.dump
+/data/ # A common directory for local database files

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Login - Project Bank</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #a7b7e6, #8a9fc9, #6a7baa); /* Consistent subtle blue gradient */
+            color: #333;
+            overflow-x: hidden;
+        }
+        /* Header specific styles (copied from index.html) */
+        header {
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            width: 100%;
+            padding: 1rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            position: sticky;
+            top: 0;
+        }
+        .header-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #2c3e50;
+            text-decoration: none;
+        }
+        /* Button styling (copied from index.html) */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.75rem;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background-color: #3498db; /* Primary Blue */
+            color: white;
+            border: 2px solid #3498db;
+        }
+        .btn-primary:hover {
+            background-color: #2980b9; /* Darker blue */
+            border-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        .btn-secondary {
+            background-color: white;
+            color: #3498db;
+            border: 2px solid #3498db;
+        }
+        .btn-secondary:hover {
+            background-color: #f0f4f8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Dropdown menu specific styles */
+        .dropdown-menu {
+            position: absolute;
+            top: 60px; /* Adjust based on header height */
+            right: 0;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+            min-width: 180px;
+            z-index: 50; /* Ensure it's above other content */
+        }
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .dropdown-menu a {
+            display: flex; /* For icon alignment */
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #333;
+            font-size: 0.95rem;
+            transition: background-color 0.2s ease;
+        }
+        .dropdown-menu a:hover {
+            background-color: #f0f4f8;
+        }
+
+        /* Container for form (adapted from index.html .container) */
+        .form-container {
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 90%;
+            width: 450px; /* Slightly adjusted width for forms */
+            animation: fadeIn 0.8s ease-out forwards; /* Changed duration to match previous employee.html */
+            margin-top: 2rem; /* Add some margin from header */
+            margin-bottom: 2rem; /* Add some margin from footer */
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .form-container h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+            text-align: left;
+            position: relative; /* For password toggle icon positioning */
+        }
+        .form-group label { /* Added for potential labels in future */
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ccc;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            box-sizing: border-box; /* Ensure padding and border are included in width */
+            transition: border-color 0.3s ease;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        .form-message {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .form-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .form-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .flex-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Password toggle icon */
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%; /* Center vertically based on parent container */
+            transform: translateY(calc(-50% + 12px)); /* Adjust for label height and input padding */
+            cursor: pointer;
+            color: #888;
+            font-size: 1.1rem;
+            z-index: 10; /* Ensure it's above input */
+        }
+        .password-toggle:hover {
+            color: #333;
+        }
+
+        /* Footer styling (copied from index.html) */
+        footer {
+            background-color: #2c3e50; /* Darker footer background */
+            color: #ecf0f1;
+            padding: 2rem 1.5rem;
+            width: 100%;
+            margin-top: auto; /* Pushes footer to bottom */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        footer .grid {
+            max-width: 1200px;
+            width: 100%;
+        }
+        footer a {
+            color: #ecf0f1;
+            transition: color 0.2s ease;
+        }
+        footer a:hover {
+            color: #3498db;
+        }
+        .footer-copyright {
+            border-top: 1px solid #3a506b;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        /* Mobile specific styles */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+            .header-nav {
+                display: none; /* Hide main nav on mobile */
+            }
+            .form-container {
+                padding: 1.5rem;
+                width: 95%;
+            }
+            .btn {
+                width: 100%;
+                margin: 0.5rem 0;
+            }
+            footer .grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            footer .grid > div {
+                margin-bottom: 1rem;
+            }
+            .dropdown-menu {
+                top: 55px; /* Adjust for mobile header */
+            }
+            .password-toggle {
+                top: calc(50% + 15px); /* Adjust position if label pushes it down on mobile */
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+<!-- Header -->
+<header>
+    <div class="flex items-center">
+        <a href="index.html" class="header-logo">Project Bank</a>
+    </div>
+    <div class="flex items-center space-x-4 relative">
+        <a href="login.html" class="btn btn-secondary px-4 py-2 text-sm font-medium">User Login</a>
+        <a href="register.html" class="btn btn-primary px-4 py-2 text-sm font-medium">Register</a>
+
+        <!-- Employee Portal Dropdown -->
+        <button class="menu-button bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-full hidden md:flex items-center justify-center text-xl" id="menuButton" aria-label="Menu">
+            &#x22EE;
+        </button>
+        <div class="dropdown-menu" id="dropdownMenu">
+            <a href="employee.html"><i class="fas fa-user-tie"></i> Employee Portal</a>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content for Employee Login Form -->
+<main class="flex-grow flex flex-col justify-center items-center px-4">
+    <div class="form-container">
+        <h1>Employee Login</h1>
+        <form id="employeeLoginForm">
+            <div class="form-group">
+                <label for="pfno">Employee ID (PFNO):</label>
+                <input type="text" id="pfno" name="pfno" placeholder="Enter Employee ID" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="Enter Password" required>
+                <i class="password-toggle fas fa-eye" id="togglePassword"></i>
+            </div>
+            <button type="submit" class="btn btn-primary w-full mt-4">Login</button>
+        </form>
+        <p class="mt-4 text-gray-600"><a href="forgot-password-employee.html" class="text-blue-600 hover:underline">Forgot Password?</a></p>
+        <div id="message" class="form-message hidden mt-4"></div>
+        <div class="back-link mt-4">
+            <a href="index.html" class="text-blue-600 hover:underline"><i class="fas fa-arrow-left mr-2"></i> Back to Home</a>
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer>
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+            <h3 class="text-white text-lg font-bold mb-4">Project Bank</h3>
+            <p class="text-sm">Your trusted partner in financial growth and security.</p>
+        </div>
+        <div>
+            <h3 class="text-white text-lg font-bold mb-4">Quick Links</h3>
+            <ul class="space-y-2 text-sm">
+                <li><a href="index.html#about-us-section" class="hover:text-blue-400 transition duration-200">About Us</a></li>
+                <li><a href="index.html#contact-footer" class="hover:text-blue-400 transition duration-200">Contact Us</a></li>
+                <li><a href="#" class="hover:text-blue-400 transition duration-200">Privacy Policy</a></li>
+            </ul>
+        </div>
+        <div>
+            <h3 class="text-white text-lg font-bold mb-4">Contact</h3>
+            <p class="text-sm flex items-center gap-2">
+                <i class="fas fa-envelope"></i>
+                <a href="mailto:omprakash11273@gmail.com" class="hover:text-blue-400 transition duration-200">omprakash11273@gmail.com</a>
+            </p>
+            <p class="text-sm flex items-center gap-2 mt-2">
+                <i class="fab fa-github"></i>
+                <a href="https://github.com/Omprakash-p06" target="_blank" rel="noopener noreferrer" class="hover:text-blue-400 transition duration-200">GitHub Profile</a>
+            </p>
+        </div>
+    </div>
+    <div class="footer-copyright">
+        Project Bank
+    </div>
+</footer>
+
+<script>
+    // Define your backend base URL.
+    const BASE_URL = "http://localhost:8080/BankManagementSystem"; // Adjust if your context path is different
+
+    // Dropdown menu functionality
+    const menuButton = document.getElementById('menuButton');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    menuButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+        dropdownMenu.classList.toggle('show');
+    });
+
+    window.addEventListener('click', (event) => {
+        if (!event.target.matches('#menuButton') && !dropdownMenu.contains(event.target)) {
+            if (dropdownMenu.classList.contains('show')) {
+                dropdownMenu.classList.remove('show');
+            }
+        }
+    });
+
+    // Show/Hide Password Toggle
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+
+    if (togglePassword && passwordInput) {
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+    }
+
+    // Function to show a custom message box
+    function showMessage(message, isSuccess = false) {
+        const msgDiv = document.getElementById('message');
+        msgDiv.classList.remove('hidden', 'success', 'error'); // Reset classes
+        msgDiv.textContent = message;
+        if (isSuccess) {
+            msgDiv.classList.add('success');
+        } else {
+            msgDiv.classList.add('error');
+        }
+        msgDiv.classList.remove('hidden'); // Ensure it's visible
+        setTimeout(() => {
+            msgDiv.classList.add('hidden'); // Hide after 3 seconds
+        }, 3000);
+    }
+
+    // Employee Login form submission handler
+    document.getElementById("employeeLoginForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const pfno = document.getElementById("pfno").value.trim(); // Trim whitespace
+        const password = document.getElementById("password").value.trim(); // Trim whitespace
+
+        const data = { pfno, password };
+
+        // Add loading state
+        const btn = e.target.querySelector('button');
+        const originalBtnHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging In...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/employee-login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json(); // Attempt to parse JSON response
+
+            if (response.ok) {
+                showMessage(result.message || "Login successful!", true);
+                window.location.href = "employee-dashboard.html";
+            } else {
+                showMessage(result.message || "Invalid credentials!", false);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            showMessage("Network error - Please try again", false);
+        } finally {
+            btn.innerHTML = originalBtnHtml;
+            btn.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+.statement-controls {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+}
+
+#accountSelector {
+    padding: 8px;
+    min-width: 200px;
+}
+
+#statementTable {
+    margin-top: 10px;
+}

@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - Project Bank</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Align content to start after header */
+            align-items: center;
+            background: linear-gradient(135deg, #a7b7e6, #8a9fc9, #6a7baa); /* Subtle blue gradient */
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Header specific styles (copied from index.html) */
+        header {
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            width: 100%;
+            padding: 1rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            position: sticky;
+            top: 0;
+        }
+        .header-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #2c3e50;
+            text-decoration: none;
+        }
+        /* Button styling (copied from index.html) */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.75rem;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background-color: #3498db; /* Primary Blue */
+            color: white;
+            border: 2px solid #3498db;
+        }
+        .btn-primary:hover {
+            background-color: #2980b9; /* Darker blue */
+            border-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        .btn-secondary {
+            background-color: white;
+            color: #3498db;
+            border: 2px solid #3498db;
+        }
+        .btn-secondary:hover {
+            background-color: #f0f4f8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        .btn-danger { /* Specific for logout */
+            background-color: #e74c3c;
+            color: white;
+            border: 2px solid #e74c3c;
+        }
+        .btn-danger:hover {
+            background-color: #c0392b;
+            border-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+
+        /* Dropdown menu specific styles */
+        .dropdown-menu {
+            position: absolute;
+            top: 60px; /* Adjust based on header height */
+            right: 0;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+            min-width: 180px;
+            z-index: 50; /* Ensure it's above other content */
+        }
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .dropdown-menu a {
+            display: flex; /* For icon alignment */
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #333;
+            font-size: 0.95rem;
+            transition: background-color 0.2s ease;
+        }
+        .dropdown-menu a:hover {
+            background-color: #f0f4f8;
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 2rem;
+            margin-top: 2rem; /* Spacing from header */
+            margin-bottom: 2rem; /* Spacing from footer */
+            background: rgba(255, 255, 255, 0.9); /* Slightly transparent white */
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-sizing: border-box;
+            animation: fadeIn 1s ease-out; /* Fade-in animation */
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.75rem;
+            text-align: left;
+        }
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #3498db;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+        .card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.25rem 0;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e4e8;
+        }
+        th {
+            background: linear-gradient(145deg, #3498db, #2980b9);
+            color: white;
+            font-weight: 600;
+        }
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        .statement-controls, .form-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end; /* Align items to the bottom if varying heights */
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 0.75rem;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Inner shadow for a softer look */
+        }
+        .form-controls .form-group {
+            flex: 1;
+            min-width: 180px; /* Adjusted min-width for better wrapping */
+        }
+        .form-controls label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+            text-align: left;
+        }
+        input[type="number"],
+        input[type="text"],
+        select {
+            padding: 0.8rem 1rem;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #e0e4e8;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        input[type="number"]:focus,
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        .logout-link-container {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        /* Message box for alerts */
+        #message-box {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(220, 53, 69, 0.9); /* Red for error */
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            text-align: center;
+            min-width: 250px;
+        }
+        #message-box.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        #message-box.success {
+            background-color: rgba(40, 167, 69, 0.9); /* Green for success */
+        }
+
+        /* Footer styling (copied from index.html) */
+        footer {
+            background-color: #2c3e50; /* Darker footer background */
+            color: #ecf0f1;
+            padding: 2rem 1.5rem;
+            width: 100%;
+            margin-top: auto; /* Pushes footer to bottom */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        footer .grid {
+            max-width: 1200px;
+            width: 100%;
+        }
+        footer a {
+            color: #ecf0f1;
+            transition: color 0.2s ease;
+        }
+        footer a:hover {
+            color: #3498db;
+        }
+        .footer-copyright {
+            border-top: 1px solid #3a506b;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+            .dashboard-container {
+                padding: 1.5rem;
+                margin-top: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            .statement-controls, .form-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .form-controls .form-group {
+                min-width: unset;
+            }
+            input[type="number"],
+            input[type="text"],
+            select,
+            .btn {
+                width: 100%;
+                padding: 12px 15px;
+            }
+            footer .grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            footer .grid > div {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+<!-- Header -->
+<header>
+    <div class="flex items-center">
+        <a href="index.html" class="header-logo">Project Bank</a>
+    </div>
+    <div class="flex items-center space-x-4 relative">
+        <a href="login.html" class="btn btn-secondary px-4 py-2 text-sm font-medium">User Login</a>
+        <a href="register.html" class="btn btn-primary px-4 py-2 text-sm font-medium">Register</a>
+
+        <!-- Employee Portal Dropdown -->
+        <button class="menu-button bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-full hidden md:flex items-center justify-center text-xl" id="menuButton" aria-label="Menu">
+            &#x22EE;
+        </button>
+        <div class="dropdown-menu" id="dropdownMenu">
+            <a href="employee.html"><i class="fas fa-user-tie"></i> Employee Portal</a>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content for Dashboard -->
+<main class="flex-grow flex flex-col items-center px-4">
+    <div class="dashboard-container">
+        <h1>Welcome, <span id="customerName" class="text-blue-800"></span>!</h1>
+
+        <div class="card">
+            <h2>Your Accounts</h2>
+            <table id="accountsTable">
+                <thead>
+                <tr>
+                    <th>Account Number</th>
+                    <th>Type</th>
+                    <th>Balance</th>
+                    <th>Opening Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Accounts will be loaded here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>Open New Account</h2>
+            <form id="createAccountForm" class="form-controls">
+                <div class="form-group">
+                    <label for="newAccountType">Account Type:</label>
+                    <select id="newAccountType" required>
+                        <option value="">Select Type</option>
+                        <option value="SAVINGS">Savings</option>
+                        <option value="CURRENT">Current</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="initialDeposit">Initial Deposit Amount:</label>
+                    <input type="number" id="initialDeposit" step="0.01" min="0.01" required>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Create New Account</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Account Statement</h2>
+            <div class="statement-controls">
+                <div class="form-group">
+                    <label for="accountSelector">Select Account:</label>
+                    <select id="accountSelector">
+                        <option value="">Select Account</option>
+                        <!-- Options populated by JavaScript -->
+                    </select>
+                </div>
+                <button class="btn btn-secondary" onclick="loadStatement()"><i class="fas fa-eye"></i> View Statement</button>
+                <button class="btn btn-secondary" onclick="downloadPdf()"><i class="fas fa-file-pdf"></i> Download PDF</button>
+            </div>
+            <table id="statementTable">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Statement data will be loaded here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>Make a Transaction (Deposit/Withdrawal)</h2>
+            <form id="transactionForm" class="form-controls">
+                <div class="form-group">
+                    <label for="transactionAccno">Account Number:</label>
+                    <select id="transactionAccno" required>
+                        <option value="">Select Account</option>
+                        <!-- Options populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transactionAmount">Amount:</label>
+                    <input type="number" id="transactionAmount" step="0.01" min="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="transactionType">Transaction Type:</label>
+                    <select id="transactionType" required>
+                        <option value="DEPOSIT">Deposit</option>
+                        <option value="WITHDRAWAL">Withdrawal</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-dollar-sign"></i> Submit Transaction</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Transfer Funds</h2>
+            <form id="transferForm" class="form-controls">
+                <div class="form-group">
+                    <label for="fromAccno">From Account:</label>
+                    <select id="fromAccno" required>
+                        <option value="">Select Account</option>
+                        <!-- Options populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="toAccno">To Account:</label>
+                    <input type="text" id="toAccno" placeholder="Recipient Account Number" required>
+                </div>
+                <div class="form-group">
+                    <label for="transferAmount">Amount:</label>
+                    <input type="number" id="transferAmount" step="0.01" min="0.01" required>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-exchange-alt"></i> Transfer Funds</button>
+            </form>
+        </div>
+
+        <div class="logout-link-container">
+            <a href="login.html" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+</main>
+
+<!-- Message box for alerts/success -->
+<div id="message-box" class="message-box"></div>
+
+<!-- Footer -->
+<footer>
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+            <h3 class="text-white text-lg font-bold mb-4">Project Bank</h3>
+            <p class="text-sm">Your trusted partner in financial growth and security.</p>
+        </div>
+        <div>
+            <h3 class="text-white text-lg font-bold mb-4">Quick Links</h3>
+            <ul class="space-y-2 text-sm">
+                <li><a href="index.html#about-us-section" class="hover:text-blue-400 transition duration-200">About Us</a></li>
+                <li><a href="index.html#contact-footer" class="hover:text-blue-400 transition duration-200">Contact Us</a></li>
+                <li><a href="#" class="hover:text-blue-400 transition duration-200">Privacy Policy</a></li>
+            </ul>
+        </div>
+        <div>
+            <h3 class="text-white text-lg font-bold mb-4">Contact</h3>
+            <p class="text-sm flex items-center gap-2">
+                <i class="fas fa-envelope"></i>
+                <a href="mailto:omprakash11273@gmail.com" class="hover:text-blue-400 transition duration-200">omprakash11273@gmail.com</a>
+            </p>
+            <p class="text-sm flex items-center gap-2 mt-2">
+                <i class="fab fa-github"></i>
+                <a href="https://github.com/Omprakash-p06" target="_blank" rel="noopener noreferrer" class="hover:text-blue-400 transition duration-200">GitHub Profile</a>
+            </p>
+        </div>
+    </div>
+    <div class="footer-copyright">
+        Project Bank
+    </div>
+</footer>
+
+<script>
+    // IMPORTANT: If you are running your frontend HTML directly from your browser (e.g., file:///C:/...),
+    // or from a different server/port than your Spring Boot application,
+    // you MUST configure CORS (Cross-Origin Resource Sharing) in your Spring Boot backend.
+    // Otherwise, your browser will block these requests with a "NetworkError".
+    // Example CORS configuration in Spring Boot (e.g., in a @Configuration class):
+    /*
+    @Configuration
+    @EnableWebMvc
+    public class WebConfig implements WebMvcConfigurer {
+        @Override
+        public void addCorsMappings(CorsRegistry registry) {
+            registry.addMapping("/api/**") // Apply to your API endpoints
+                    .allowedOrigins("http://localhost:8080", "null") // Allow your frontend origin (and "null" for file://)
+                    .allowedMethods("GET", "POST", "PUT", "DELETE")
+                    .allowCredentials(true); // Allow cookies, authorization headers, etc.
+        }
+    }
+    */
+
+    // Define your backend base URL.
+    // Ensure this matches the actual URL where your Spring Boot application is running.
+    // If your WAR is deployed to Tomcat with a context path, include it here.
+    // Example: If your app runs at http://localhost:8080/BankManagementSystem/
+    const BASE_URL = "http://localhost:8080/BankManagementSystem";
+
+    // Dropdown menu functionality
+    const menuButton = document.getElementById('menuButton');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    menuButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+        dropdownMenu.classList.toggle('show');
+    });
+
+    window.addEventListener('click', (event) => {
+        if (!event.target.matches('#menuButton') && !dropdownMenu.contains(event.target)) {
+            if (dropdownMenu.classList.contains('show')) {
+                dropdownMenu.classList.remove('show');
+            }
+        }
+    });
+
+    // Function to show a custom message box
+    function showMessage(message, isSuccess = false) {
+        const msgBox = document.getElementById('message-box');
+        msgBox.textContent = message;
+        msgBox.classList.remove('success'); // Reset class
+        if (isSuccess) {
+            msgBox.classList.add('success');
+        }
+        msgBox.classList.add('show');
+        setTimeout(() => {
+            msgBox.classList.remove('show');
+        }, 3000); // Hide after 3 seconds
+    }
+
+    let customerAccounts = []; // To store fetched accounts
+
+    // Function to fetch dashboard data (customer details and accounts)
+    async function fetchDashboardData() {
+        try {
+            const response = await fetch(`${BASE_URL}/api/dashboard`, {
+                credentials: 'include' // Important for session management
+            });
+
+            if (response.status === 401) { // Unauthorized, session expired or not logged in
+                window.location.href = "login.html";
+                return;
+            }
+            if (!response.ok) {
+                // Try to read error message from response if available
+                const errorText = await response.text();
+                throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorText || 'No specific error message provided.'}`);
+            }
+
+            const data = await response.json();
+            document.getElementById("customerName").textContent = `${data.customer.fname} ${data.customer.lname}`;
+
+            customerAccounts = data.accounts; // Store accounts globally
+
+            // Populate accounts table
+            const accountsTableBody = document.querySelector("#accountsTable tbody");
+            accountsTableBody.innerHTML = ''; // Clear existing
+            if (customerAccounts.length === 0) {
+                const row = accountsTableBody.insertRow();
+                const cell = row.insertCell();
+                cell.colSpan = 4;
+                cell.textContent = "No accounts found. Please create one below.";
+                cell.style.textAlign = "center";
+            } else {
+                customerAccounts.forEach(account => {
+                    const row = accountsTableBody.insertRow();
+                    row.insertCell().textContent = account.accno;
+                    row.insertCell().textContent = account.acctype;
+                    row.insertCell().textContent = `₹${account.balance.toFixed(2)}`;
+                    row.insertCell().textContent = account.openingDate;
+                });
+            }
+
+            // Populate account selectors for statement, transaction, and transfer
+            const accountSelectors = [
+                document.getElementById("accountSelector"),
+                document.getElementById("transactionAccno"),
+                document.getElementById("fromAccno")
+            ];
+
+            accountSelectors.forEach(selector => {
+                selector.innerHTML = '<option value="">Select Account</option>'; // Reset
+                customerAccounts.forEach(account => {
+                    const option = document.createElement("option");
+                    option.value = account.accno;
+                    option.textContent = `${account.accno} (${account.acctype} - ₹${account.balance.toFixed(2)})`;
+                    selector.appendChild(option);
+                });
+            });
+
+        } catch (error) {
+            console.error("Error fetching dashboard data:", error);
+            // Display a user-friendly message for network errors
+            showMessage(`Failed to load dashboard data. Check if the backend server is running and CORS is configured. Details: ${error.message}`, false);
+        }
+    }
+
+    // Load dashboard data on page load
+    document.addEventListener("DOMContentLoaded", fetchDashboardData);
+
+    // Function to load account statement
+    async function loadStatement() {
+        const accno = document.getElementById("accountSelector").value;
+        if (!accno) {
+            showMessage("Please select an account to view the statement.", false);
+            return;
+        }
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/statement?accno=${accno}`, {
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                const errorData = await response.text();
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorData}`);
+            }
+
+            const transactions = await response.json();
+            const statementTableBody = document.querySelector("#statementTable tbody");
+            statementTableBody.innerHTML = ''; // Clear existing
+
+            if (transactions.length === 0) {
+                const row = statementTableBody.insertRow();
+                const cell = row.insertCell();
+                cell.colSpan = 4;
+                cell.textContent = "No transactions found for this account.";
+                cell.style.textAlign = "center";
+            } else {
+                transactions.forEach(transaction => {
+                    const row = statementTableBody.insertRow();
+                    // Format date for better readability
+                    const transactionDate = transaction.transactionDate ? new Date(transaction.transactionDate).toLocaleString() : 'N/A';
+                    row.insertCell().textContent = transactionDate;
+                    row.insertCell().textContent = transaction.transactiontype;
+                    row.insertCell().textContent = `₹${transaction.amount.toFixed(2)}`;
+                    // Determine status based on checkerid
+                    const status = transaction.checkerid ? `Approved (Emp#${transaction.checkerid})` : 'Pending';
+                    row.insertCell().textContent = status;
+                });
+            }
+
+        } catch (error) {
+            console.error("Error loading statement:", error);
+            showMessage(`Failed to load statement: ${error.message}`, false);
+        }
+    }
+
+    // Function to download PDF statement
+    function downloadPdf() {
+        const accno = document.getElementById("accountSelector").value;
+        if (!accno) {
+            showMessage("Please select an account to download the PDF statement.", false);
+            return;
+        }
+        // Opens in a new tab/window, browser handles download
+        window.open(`${BASE_URL}/api/reports/statement?accno=${accno}`);
+    }
+
+    // Handle form submission for creating a new account
+    document.getElementById("createAccountForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const accountType = document.getElementById("newAccountType").value;
+        const initialDeposit = parseFloat(document.getElementById("initialDeposit").value);
+
+        if (!accountType) {
+            showMessage("Please select an account type.", false);
+            return;
+        }
+        if (isNaN(initialDeposit) || initialDeposit <= 0) {
+            showMessage("Please enter a valid positive initial deposit amount.", false);
+            return;
+        }
+
+        const accountData = {
+            accountType: accountType,
+            initialDeposit: initialDeposit
+        };
+
+        try {
+            const btn = e.target.querySelector('button');
+            const originalBtnHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+            btn.disabled = true;
+
+            const response = await fetch(`${BASE_URL}/api/create-account`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(accountData),
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                showMessage(result.message, true);
+                e.target.reset(); // Clear the form
+                await fetchDashboardData(); // Refresh accounts list
+            } else {
+                const errorResult = await response.json();
+                showMessage(`Account creation failed: ${errorResult.message || 'Unknown error'}`, false);
+            }
+        } catch (error) {
+            console.error("Error creating account:", error);
+            showMessage("Network error or server unavailable. Please try again.", false);
+        } finally {
+            const btn = e.target.querySelector('button');
+            btn.innerHTML = originalBtnHtml;
+            btn.disabled = false;
+        }
+    });
+
+
+    // Handle transaction form submission (Deposit/Withdrawal)
+    document.getElementById("transactionForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const transactionAccno = document.getElementById("transactionAccno").value;
+        const transactionAmount = parseFloat(document.getElementById("transactionAmount").value);
+        const transactionType = document.getElementById("transactionType").value;
+
+        if (!transactionAccno) {
+            showMessage("Please select an account for the transaction.", false);
+            return;
+        }
+
+        if (isNaN(transactionAmount) || transactionAmount <= 0) {
+            showMessage("Please enter a valid positive amount.", false);
+            return;
+        }
+
+        // Basic client-side balance check for withdrawals (optional, but good UX)
+        if (transactionType === "WITHDRAWAL") {
+            const selectedAccount = customerAccounts.find(acc => acc.accno === transactionAccno);
+            if (selectedAccount && selectedAccount.balance < transactionAmount) {
+                showMessage("Insufficient funds for withdrawal.", false);
+                return;
+            }
+        }
+
+        const transactionData = {
+            accno: transactionAccno,
+            amount: transactionAmount,
+            type: transactionType
+        };
+
+        try {
+            const btn = e.target.querySelector('button');
+            const originalBtnHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            btn.disabled = true;
+
+            const response = await fetch(`${BASE_URL}/api/transaction`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(transactionData),
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                showMessage("Transaction successfully sent for approval!", true);
+                e.target.reset(); // Clear the form
+                await fetchDashboardData(); // Refresh accounts/balances
+            } else {
+                const errorResult = await response.json(); // Assuming error response is JSON
+                showMessage(`Transaction failed: ${errorResult.message || 'Unknown error'}`, false);
+            }
+        } catch (error) {
+            console.error("Error during transaction:", error);
+            showMessage("Network error or server unavailable. Please try again.", false);
+        } finally {
+            const btn = e.target.querySelector('button');
+            btn.innerHTML = originalBtnHtml;
+            btn.disabled = false;
+        }
+    });
+
+    // Handle transfer form submission
+    document.getElementById("transferForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const fromAccno = document.getElementById("fromAccno").value;
+        const toAccno = document.getElementById("toAccno").value;
+        const transferAmount = parseFloat(document.getElementById("transferAmount").value);
+
+        if (!fromAccno || !toAccno) {
+            showMessage("Please select both source and destination accounts.", false);
+            return;
+        }
+        if (fromAccno === toAccno) {
+            showMessage("Cannot transfer to the same account.", false);
+            return;
+        }
+        if (isNaN(transferAmount) || transferAmount <= 0) {
+            showMessage("Please enter a valid positive amount.", false);
+            return;
+        }
+
+        // Basic client-side balance check for transfers
+        const selectedAccount = customerAccounts.find(acc => acc.accno === fromAccno);
+        if (selectedAccount && selectedAccount.balance < transferAmount) {
+            showMessage("Insufficient funds in the source account.", false);
+            return;
+        }
+
+        const transferData = {
+            fromAccno: fromAccno,
+            toAccno: toAccno,
+            amount: transferAmount
+        };
+
+        try {
+            const btn = e.target.querySelector('button');
+            const originalBtnHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Transferring...';
+            btn.disabled = true;
+
+            const response = await fetch(`${BASE_URL}/api/transfer`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(transferData),
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                showMessage("Funds transferred successfully!", true);
+                e.target.reset(); // Clear the form
+                await fetchDashboardData(); // Refresh accounts/balances
+            } else {
+                const errorResult = await response.json(); // Assuming error response is JSON
+                showMessage(`Transfer failed: ${errorResult.error || 'Unknown error'}`, false);
+            }
+        } catch (error) {
+            console.error("Error during transfer:", error);
+            showMessage("Network error or server unavailable. Please try again.", false);
+        } finally {
+            const btn = e.target.querySelector('button');
+            btn.innerHTML = originalBtnHtml;
+            btn.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>

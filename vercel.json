@@ -1,0 +1,57 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "builds": [
+    {
+      "src": "src/main/webapp/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/style.css",
+      "dest": "/src/main/webapp/style.css"
+    },
+    {
+      "src": "/dashboard.html",
+      "dest": "/src/main/webapp/dashboard.html"
+    },
+    {
+      "src": "/employee-dashboard.html",
+      "dest": "/src/main/webapp/employee-dashboard.html"
+    },
+    {
+      "src": "/employee.html",
+      "dest": "/src/main/webapp/employee.html"
+    },
+    {
+      "src": "/index.html",
+      "dest": "/src/main/webapp/index.html"
+    },
+    {
+      "src": "/login.html",
+      "dest": "/src/main/webapp/login.html"
+    },
+    {
+      "src": "/register.html",
+      "dest": "/src/main/webapp/register.html"
+    },
+    {
+      "src": "/transaction.html",
+      "dest": "/src/main/webapp/transaction.html"
+    },
+    {
+      "src": "/transfer.html",
+      "dest": "/src/main/webapp/transfer.html"
+    },
+    {
+      "src": "/",
+      "dest": "/src/main/webapp/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/src/main/webapp/$1"
+    }
+  ]
+}

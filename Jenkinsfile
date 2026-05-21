@@ -6,12 +6,8 @@ pipeline {
         DOCKER_HUB_CREDENTIALS_ID = 'docker-hub-credentials'
         DOCKER_IMAGE_NAME         = 'vishwajith1312/bank-management-system'
         DOCKER_TAG                = "${BUILD_NUMBER}"
-        
-        // Azure Credentials and Details
-        AZURE_CREDENTIALS_ID      = 'azure-sp-credentials'
-        AZURE_RESOURCE_GROUP      = 'BankManagementRG'
-        AZURE_APP_SERVICE_NAME    = 'bank-management-app'
-        
+
+
         // SonarQube Configuration
         SONAR_CREDENTIALS_ID      = 'sonar-token'
         SONAR_HOST_URL            = 'http://host.docker.internal:9000'
@@ -73,18 +69,7 @@ pipeline {
             }
         }
 
-        stage('Deploy to Azure') {
-            steps {
-                echo 'Deploying Dockerized container to Azure App Service...'
-                withCredentials([azureServicePrincipal(credentialsId: "${AZURE_CREDENTIALS_ID}")]) {
-                    // Login to Azure using Service Principal credentials
-                    bat "az login --service-principal -u %AZURE_CLIENT_ID% -p %AZURE_CLIENT_SECRET% --tenant %AZURE_TENANT_ID%"
-                    
-                    // Update Azure Web App to use the new Docker image
-                    bat "az webapp config container set --name ${AZURE_APP_SERVICE_NAME} --resource-group ${AZURE_RESOURCE_GROUP} --docker-custom-image-name ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
-                }
-            }
-        }
+
     }
 
     post {

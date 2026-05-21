@@ -24,13 +24,14 @@ pipeline {
         stage('Dependency Check') {
             steps {
                 echo 'Running OWASP Dependency-Check vulnerability scan on third-party dependencies...'
-                // Run Maven in Docker container using a named volume (maven-repo) to cache downloaded files and NVD vulnerability databases
-                bat 'docker run --rm -v maven-repo:/root/.m2 -v "%WORKSPACE%":/app -w /app maven:3.8.6-eclipse-temurin-17 mvn org.owasp:dependency-check-maven:check -Dformat=HTML'
+                // Run Maven in Docker container using a named volume (maven-repo) to cache downloaded files
+                // -DautoUpdate=false: Skip NVD feed download (old JSON feed API was shut down by NIST on Dec 31, 2023 - returns 403 Forbidden)
+                bat 'docker run --rm -v maven-repo:/root/.m2 -v "%WORKSPACE%":/app -w /app maven:3.8.6-eclipse-temurin-17 mvn org.owasp:dependency-check-maven:check -Dformat=HTML -DautoUpdate=false'
             }
             post {
                 always {
-                    // Archive the generated HTML report
-                    archiveArtifacts artifacts: '**/target/dependency-check-report.html', fingerprint: true
+                    // Archive the generated HTML report (allowEmptyArchive prevents failure if scan has no report)
+                    archiveArtifacts artifacts: '**/target/dependency-check-report.html', fingerprint: true, allowEmptyArchive: true
                 }
             }
         }

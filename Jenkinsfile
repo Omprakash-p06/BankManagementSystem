@@ -39,8 +39,11 @@ pipeline {
         stage('SonarQube Vulnerability Scan') {
             steps {
                 echo 'Running SonarQube vulnerability and code quality checks...'
-                withCredentials([string(credentialsId: "${SONAR_CREDENTIALS_ID}", variable: 'SONAR_TOKEN')]) {
-                    bat "docker run --rm -v maven-repo:/root/.m2 -v \"%WORKSPACE%\":/app -w /app maven:3.8.6-eclipse-temurin-17 mvn sonar:sonar \"-Dsonar.host.url=${SONAR_HOST_URL}\" \"-Dsonar.login=%SONAR_TOKEN%\""
+                // catchError: SonarQube scan is non-blocking. Pipeline continues even if token is expired or SonarQube is unreachable.
+                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                    withCredentials([string(credentialsId: "${SONAR_CREDENTIALS_ID}", variable: 'SONAR_TOKEN')]) {
+                        bat "docker run --rm -v maven-repo:/root/.m2 -v \"%WORKSPACE%\":/app -w /app maven:3.8.6-eclipse-temurin-17 mvn sonar:sonar \"-Dsonar.host.url=${SONAR_HOST_URL}\" \"-Dsonar.login=%SONAR_TOKEN%\""
+                    }
                 }
             }
         }

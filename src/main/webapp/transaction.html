@@ -35,7 +35,12 @@
     <a href="dashboard.html">Back to Dashboard</a>
 </div>
 
+<script src="config.js"></script>
 <script>
+    const BASE_URL = (window.APP_CONFIG && window.APP_CONFIG.BASE_URL)
+        ? window.APP_CONFIG.BASE_URL
+        : "http://localhost:8080/BankManagementSystem";
+
     document.getElementById("transactionForm").addEventListener("submit", async (e) => {
         e.preventDefault();
         const transactionData = {
@@ -45,7 +50,7 @@
         };
 
         try {
-            const response = await fetch("http://localhost:8080/BankManagementSystem/api/transaction", {
+            const response = await fetch(`${BASE_URL}/api/transaction`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(transactionData),

@@ -59,14 +59,14 @@ Configure these in Jenkins under *Manage Jenkins -> Credentials*:
 
 ---
 
-## ☁️ 3. Azure & Vercel Integration
+## ☁️ 3. Azure & Netlify Integration
 
 We separate the deployment into a highly scalable, serverless frontend and a robust, containerized backend:
 
 ```
                   ┌──────────────────────┐
-                  │   Vercel Deployment  │ (Static Frontend HTML/CSS)
-                  │ (bank-mgmt.vercel)   │
+                  │  Netlify Deployment  │ (Static Frontend HTML/CSS)
+                  │   (Netlify Site)     │
                   └──────────┬───────────┘
                              │
                     HTTPS API Request
@@ -94,22 +94,25 @@ We separate the deployment into a highly scalable, serverless frontend and a rob
    - `SPRING_DATASOURCE_USERNAME`: `<db-user>`
    - `SPRING_DATASOURCE_PASSWORD`: `<db-password>`
 
-### Frontend: Vercel Deployment
-The frontend is hosted on Vercel using the configuration defined in [vercel.json](file:///C:/Users/HP/Desktop/BankManagementSystem/vercel.json).
+### Frontend: Netlify Deployment
+The frontend is hosted on Netlify using the configuration defined in `netlify.toml`.
 
-1. Install the Vercel CLI (or link via GitHub):
+1. Create a new Netlify site from this repository.
+2. Build command:
    ```bash
-   npm install -g vercel
+   node scripts/netlify-build.js
    ```
-2. Log in and deploy from the root of the project:
-   ```bash
-   vercel
+3. Publish directory:
    ```
-3. Set the target backend endpoint in your JavaScript files:
-   - In frontend scripts (e.g. `login.html`, `register.html`), update the `BASE_URL` to point to your live Azure App Service URL instead of `localhost`:
-     ```javascript
-     const BASE_URL = "https://<your-azure-app-service-name>.azurewebsites.net/BankManagementSystem";
-     ```
+   src/main/webapp
+   ```
+4. Add a Netlify environment variable for the backend URL:
+   - `BASE_URL`: `https://<your-azure-app-service-name>.azurewebsites.net/BankManagementSystem`
+5. Deploy the site.
+
+Notes:
+- `netlify.toml` includes clean URL redirects for the HTML pages.
+- If your backend is on Azure App Service, ensure CORS allows your Netlify domain.
 
 ---
 

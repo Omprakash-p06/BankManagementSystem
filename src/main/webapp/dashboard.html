@@ -505,6 +505,7 @@
     </div>
 </footer>
 
+<script src="config.js"></script>
 <script>
     // IMPORTANT: If you are running your frontend HTML directly from your browser (e.g., file:///C:/...),
     // or from a different server/port than your Spring Boot application,
@@ -529,7 +530,9 @@
     // Ensure this matches the actual URL where your Spring Boot application is running.
     // If your WAR is deployed to Tomcat with a context path, include it here.
     // Example: If your app runs at http://localhost:8080/BankManagementSystem/
-    const BASE_URL = "http://localhost:8080/BankManagementSystem";
+    const BASE_URL = (window.APP_CONFIG && window.APP_CONFIG.BASE_URL)
+        ? window.APP_CONFIG.BASE_URL
+        : "http://localhost:8080/BankManagementSystem";
 
     // Dropdown menu functionality
     const menuButton = document.getElementById('menuButton');

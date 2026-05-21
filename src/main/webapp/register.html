@@ -345,6 +345,7 @@
     </div>
 </footer>
 
+<script src="config.js"></script>
 <script>
     // Dropdown menu functionality
     const menuButton = document.getElementById('menuButton');
@@ -362,6 +363,11 @@
             }
         }
     });
+
+    // Define your backend base URL.
+    const BASE_URL = (window.APP_CONFIG && window.APP_CONFIG.BASE_URL)
+        ? window.APP_CONFIG.BASE_URL
+        : "http://localhost:8080/BankManagementSystem";
 
     // Registration form submission handler
     document.getElementById('registrationForm').addEventListener('submit', async function(event) {
@@ -391,7 +397,7 @@
         };
 
         try {
-            const response = await fetch('http://localhost:8080/BankManagementSystem/api/register', {
+            const response = await fetch(`${BASE_URL}/api/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

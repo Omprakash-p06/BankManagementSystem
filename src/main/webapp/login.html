@@ -333,6 +333,7 @@
   </div>
 </footer>
 
+<script src="config.js"></script>
 <script>
   // Dropdown menu functionality
   const menuButton = document.getElementById('menuButton');
@@ -367,7 +368,9 @@
 
   // Login form submission handler
   // Define your backend base URL.
-  const BASE_URL = "http://localhost:8080/BankManagementSystem"; // Adjust if your context path is different
+  const BASE_URL = (window.APP_CONFIG && window.APP_CONFIG.BASE_URL)
+    ? window.APP_CONFIG.BASE_URL
+    : "http://localhost:8080/BankManagementSystem"; // Adjust if your context path is different
 
   document.getElementById('loginForm').addEventListener('submit', async function(event) {
     event.preventDefault(); // Prevent default form submission

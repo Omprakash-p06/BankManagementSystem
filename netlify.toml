@@ -1,0 +1,43 @@
+[build]
+  command = "node scripts/netlify-build.js"
+  publish = "src/main/webapp"
+
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/register"
+  to = "/register.html"
+  status = 200
+
+[[redirects]]
+  from = "/dashboard"
+  to = "/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/employee"
+  to = "/employee.html"
+  status = 200
+
+[[redirects]]
+  from = "/employee-dashboard"
+  to = "/employee-dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/transaction"
+  to = "/transaction.html"
+  status = 200
+
+[[redirects]]
+  from = "/transfer"
+  to = "/transfer.html"
+  status = 200

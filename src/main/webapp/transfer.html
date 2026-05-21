@@ -32,7 +32,12 @@
   <a href="dashboard.html">Back to Dashboard</a>
 </div>
 
+<script src="config.js"></script>
 <script>
+  const BASE_URL = (window.APP_CONFIG && window.APP_CONFIG.BASE_URL)
+    ? window.APP_CONFIG.BASE_URL
+    : "http://localhost:8080/BankManagementSystem";
+
   document.getElementById("transferForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const transferData = {
@@ -42,7 +47,7 @@
     };
 
     try {
-      const response = await fetch("http://localhost:8080/BankManagementSystem/api/transfer", {
+      const response = await fetch(`${BASE_URL}/api/transfer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(transferData),

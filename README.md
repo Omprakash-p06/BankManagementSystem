@@ -59,7 +59,7 @@ Configure these in Jenkins under *Manage Jenkins -> Credentials*:
 
 ## ☁️ 3. Deployment & Netlify Integration
 
-We separate the deployment into a highly scalable, serverless frontend and a robust, containerized backend:
+The project separates the deployment into a highly scalable, serverless frontend and a robust, containerized backend:
 
 ```
                   ┌──────────────────────┐

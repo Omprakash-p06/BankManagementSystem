@@ -65,9 +65,11 @@ pipeline {
         stage('Docker Push') {
             steps {
                 echo 'Pushing Docker image to Docker Registry...'
-                bat 'docker login -u vishwajith1312 -p 4J3chfzk]hc-2CT'
-                bat "docker push ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
-                bat "docker push ${DOCKER_IMAGE_NAME}:latest"
+                withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS_ID}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                    bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
+                    bat "docker push ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
+                    bat "docker push ${DOCKER_IMAGE_NAME}:latest"
+                }
             }
         }
 

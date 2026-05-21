@@ -66,7 +66,7 @@ pipeline {
             steps {
                 echo 'Pushing Docker image to Docker Registry...'
                 withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS_ID}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                    bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
+                    powershell "echo \$env:DOCKER_PASSWORD | docker login -u \$env:DOCKER_USERNAME --password-stdin"
                     bat "docker push ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
                     bat "docker push ${DOCKER_IMAGE_NAME}:latest"
                 }

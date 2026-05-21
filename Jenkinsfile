@@ -14,7 +14,7 @@ pipeline {
         
         // SonarQube Configuration
         SONAR_CREDENTIALS_ID      = 'sonar-token'
-        SONAR_HOST_URL            = 'http://localhost:9000'
+        SONAR_HOST_URL            = 'http://host.docker.internal:9000'
     }
 
     stages {
@@ -28,8 +28,8 @@ pipeline {
         stage('Dependency Check') {
             steps {
                 echo 'Running OWASP Dependency-Check vulnerability scan on third-party dependencies...'
-                // Using Maven plugin for Dependency-Check
-                bat 'mvn org.owasp:dependency-check-maven:check -Dformat=HTML'
+                // Run Maven in Docker container to avoid requiring local Maven installation on the Jenkins host
+                bat 'docker run --rm -v "%WORKSPACE%":/app -w /app maven:3.8.6-eclipse-temurin-17 mvn org.owasp:dependency-check-maven:check -Dformat=HTML'
             }
             post {
                 always {
@@ -43,7 +43,7 @@ pipeline {
             steps {
                 echo 'Running SonarQube vulnerability and code quality checks...'
                 withCredentials([string(credentialsId: "${SONAR_CREDENTIALS_ID}", variable: 'SONAR_TOKEN')]) {
-                    bat "mvn sonar:sonar -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=%SONAR_TOKEN%"
+                    bat "docker run --rm -v \"%WORKSPACE%\":/app -w /app maven:3.8.6-eclipse-temurin-17 mvn sonar:sonar \"-Dsonar.host.url=${SONAR_HOST_URL}\" \"-Dsonar.login=%SONAR_TOKEN%\""
                 }
             }
         }
@@ -51,7 +51,7 @@ pipeline {
         stage('Build Artifact') {
             steps {
                 echo 'Compiling project and packaging WAR artifact...'
-                bat 'mvn clean package -DskipTests'
+                bat 'docker run --rm -v "%WORKSPACE%":/app -w /app maven:3.8.6-eclipse-temurin-17 mvn clean package -DskipTests'
             }
         }
 

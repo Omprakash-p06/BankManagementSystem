@@ -24,7 +24,7 @@ The project uses a **multi-stage Docker build**. This compiles the Spring Boot J
 
 ### Pushing Docker Image to Registry
 
-To push the built image to Docker Hub or Azure Container Registry (ACR):
+To push the built image to Docker Hub:
 ```bash
 # Tag the image
 docker tag bankmanagementsystem_app:latest <your-dockerhub-username>/bank-management-system:latest
@@ -48,18 +48,16 @@ The declarative [Jenkinsfile](file:///C:/Users/HP/Desktop/BankManagementSystem/J
 3. **SonarQube Scan**: Conducts code quality analysis and vulnerability scans.
 4. **Build Artifact**: Compiles the Spring Boot project and creates a deployable `.war` file.
 5. **Docker Build**: Builds the container image using [Dockerfile](file:///C:/Users/HP/Desktop/BankManagementSystem/Dockerfile).
-6. **Docker Push**: Authenticates and pushes the image to Docker Hub (or Azure Container Registry).
-7. **Deploy to Azure**: Deploys the container to Azure App Service using Azure CLI.
+6. **Docker Push**: Authenticates and pushes the image to Docker Hub.
 
 ### Required Jenkins Credentials
 Configure these in Jenkins under *Manage Jenkins -> Credentials*:
 - `docker-hub-credentials`: Username & Password for your Docker registry.
-- `azure-sp-credentials`: Azure Service Principal credentials (client ID, client secret, tenant ID).
 - `sonar-token`: Authentication token generated in your SonarQube account.
 
 ---
 
-## ☁️ 3. Azure & Netlify Integration
+## ☁️ 3. Deployment & Netlify Integration
 
 We separate the deployment into a highly scalable, serverless frontend and a robust, containerized backend:
 
@@ -73,7 +71,7 @@ We separate the deployment into a highly scalable, serverless frontend and a rob
                              │
                              ▼
                   ┌──────────────────────┐
-                  │  Azure App Service   │ (Containerized Java Backend)
+                  │  Production Server   │ (Containerized Java Backend)
                   │    (Docker Image)    │
                   └──────────┬───────────┘
                              │
@@ -81,16 +79,15 @@ We separate the deployment into a highly scalable, serverless frontend and a rob
                              │
                              ▼
                   ┌──────────────────────┐
-                  │    Azure Database    │ (MySQL Instance)
-                  │      for MySQL       │
+                  │   Database Server    │ (MySQL Instance)
                   └──────────────────────┘
 ```
 
-### Backend: Azure Deployment
-1. Create an Azure App Service using the **Docker Container** option.
-2. Link it to your Azure Container Registry (ACR) or Docker Hub.
-3. Configure the environment variables in Azure App Service Configuration:
-   - `SPRING_DATASOURCE_URL`: `jdbc:mysql://<your-azure-mysql-host>:3306/bank_management`
+### Backend: Container Deployment
+1. Run the Docker container on your target server.
+2. Ensure it is connected to your MySQL instance.
+3. Configure the environment variables:
+   - `SPRING_DATASOURCE_URL`: `jdbc:mysql://<your-database-host>:3306/bank_management`
    - `SPRING_DATASOURCE_USERNAME`: `<db-user>`
    - `SPRING_DATASOURCE_PASSWORD`: `<db-password>`
 
@@ -107,12 +104,12 @@ The frontend is hosted on Netlify using the configuration defined in `netlify.to
    src/main/webapp
    ```
 4. Add a Netlify environment variable for the backend URL:
-   - `BASE_URL`: `https://<your-azure-app-service-name>.azurewebsites.net/BankManagementSystem`
+   - `BASE_URL`: `https://<your-backend-domain>/BankManagementSystem`
 5. Deploy the site.
 
 Notes:
 - `netlify.toml` includes clean URL redirects for the HTML pages.
-- If your backend is on Azure App Service, ensure CORS allows your Netlify domain.
+- Ensure the backend CORS configuration allows your Netlify domain.
 
 ---
 

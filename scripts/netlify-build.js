@@ -4,7 +4,7 @@ const path = require("path");
 const baseUrl = process.env.BASE_URL;
 if (!baseUrl) {
   console.error("BASE_URL env var is required for Netlify builds.");
-  console.error("Example: https://<your-app>.azurewebsites.net/BankManagementSystem");
+  console.error("Example: https://<your-backend-domain>/BankManagementSystem");
   process.exit(1);
 }
 

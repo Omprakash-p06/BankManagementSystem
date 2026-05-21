@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Docker Credentials and Image details
         DOCKER_HUB_CREDENTIALS_ID = 'docker-hub-credentials'
-        DOCKER_IMAGE_NAME         = 'omprakashp06/bank-management-system'
+        DOCKER_IMAGE_NAME         = 'vishwajith1312/bank-management-system'
         DOCKER_TAG                = "${BUILD_NUMBER}"
         
         // Azure Credentials and Details

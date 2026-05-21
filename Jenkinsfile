@@ -29,7 +29,7 @@ pipeline {
             steps {
                 echo 'Running OWASP Dependency-Check vulnerability scan on third-party dependencies...'
                 // Using Maven plugin for Dependency-Check
-                sh 'mvn org.owasp:dependency-check-maven:check -Dformat=HTML'
+                bat 'mvn org.owasp:dependency-check-maven:check -Dformat=HTML'
             }
             post {
                 always {
@@ -43,7 +43,7 @@ pipeline {
             steps {
                 echo 'Running SonarQube vulnerability and code quality checks...'
                 withCredentials([string(credentialsId: "${SONAR_CREDENTIALS_ID}", variable: 'SONAR_TOKEN')]) {
-                    sh "mvn sonar:sonar -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
+                    bat "mvn sonar:sonar -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=%SONAR_TOKEN%"
                 }
             }
         }
@@ -51,27 +51,24 @@ pipeline {
         stage('Build Artifact') {
             steps {
                 echo 'Compiling project and packaging WAR artifact...'
-                sh 'mvn clean package -DskipTests'
+                bat 'mvn clean package -DskipTests'
             }
         }
 
         stage('Docker Build') {
             steps {
                 echo "Building Docker container image: ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}..."
-                script {
-                    dockerImage = docker.build("${DOCKER_IMAGE_NAME}:${DOCKER_TAG}", "-f Dockerfile .")
-                }
+                bat "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} -t ${DOCKER_IMAGE_NAME}:latest -f Dockerfile ."
             }
         }
 
         stage('Docker Push') {
             steps {
                 echo 'Pushing Docker image to Docker Registry...'
-                script {
-                    docker.withRegistry('', "${DOCKER_HUB_CREDENTIALS_ID}") {
-                        dockerImage.push("${DOCKER_TAG}")
-                        dockerImage.push("latest")
-                    }
+                withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    bat "docker login -u %DOCKER_USER% -p %DOCKER_PASS%"
+                    bat "docker push ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
+                    bat "docker push ${DOCKER_IMAGE_NAME}:latest"
                 }
             }
         }
@@ -81,10 +78,10 @@ pipeline {
                 echo 'Deploying Dockerized container to Azure App Service...'
                 withCredentials([azureServicePrincipal(credentialsId: "${AZURE_CREDENTIALS_ID}")]) {
                     // Login to Azure using Service Principal credentials
-                    sh "az login --service-principal -u ${AZURE_CLIENT_ID} -p ${AZURE_CLIENT_SECRET} --tenant ${AZURE_TENANT_ID}"
+                    bat "az login --service-principal -u %AZURE_CLIENT_ID% -p %AZURE_CLIENT_SECRET% --tenant %AZURE_TENANT_ID%"
                     
                     // Update Azure Web App to use the new Docker image
-                    sh "az webapp config container set --name ${AZURE_APP_SERVICE_NAME} --resource-group ${AZURE_RESOURCE_GROUP} --docker-custom-image-name ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
+                    bat "az webapp config container set --name ${AZURE_APP_SERVICE_NAME} --resource-group ${AZURE_RESOURCE_GROUP} --docker-custom-image-name ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
                 }
             }
         }

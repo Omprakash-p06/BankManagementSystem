@@ -3,13 +3,13 @@ pipeline {
 
     environment {
         // Docker Credentials and Image details
-        DOCKER_HUB_CREDENTIALS_ID = 'docker-hub-credentials'
-        DOCKER_IMAGE_NAME         = 'vishwajith1312/bank-management-system'
+        DOCKER_HUB_CREDENTIALS_ID = 'dockerhub-omprakash006'
+        DOCKER_IMAGE_NAME         = 'Omprakash006/bank-management-system'
         DOCKER_TAG                = "${BUILD_NUMBER}"
 
 
         // SonarQube Configuration
-        SONAR_CREDENTIALS_ID      = 'sonar-token'
+        SONAR_CREDENTIALS_ID      = 'sonar-token-Omprakash006'
         SONAR_HOST_URL            = 'http://host.docker.internal:9000'
     }
 

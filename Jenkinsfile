@@ -25,7 +25,7 @@ pipeline {
             steps {
                 echo 'Running OWASP Dependency-Check vulnerability scan on third-party dependencies...'
                 // Run Maven in Docker container using named volumes to cache Maven dependencies and OWASP database
-                // OWASP Dependency-Check 8.x supports NVD API 2.0. An NVD API key (optional) speeds up downloads:
+                // OWASP Dependency-Check 12.x uses NVD API 2.0. An NVD API key (optional) speeds up downloads:
                 // Add -DnvdApiKey=... and Jenkins credential 'nvd-api-key' for faster updates.
                 // Without a key, downloads are rate-limited but still work.
                 bat 'docker run --rm -v maven-repo:/root/.m2 -v dependency-check-data:/root/.dependency-check -v "%WORKSPACE%":/app -w /app maven:3.8.6-eclipse-temurin-17 mvn org.owasp:dependency-check-maven:check -Dformat=HTML'
@@ -44,7 +44,7 @@ pipeline {
                 // catchError: SonarQube scan is non-blocking. Pipeline continues even if token is expired or SonarQube is unreachable.
                 catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                     withCredentials([string(credentialsId: "${SONAR_CREDENTIALS_ID}", variable: 'SONAR_TOKEN')]) {
-                        bat "docker run --rm -v maven-repo:/root/.m2 -v \"%WORKSPACE%\":/app -w /app maven:3.8.6-eclipse-temurin-17 mvn sonar:sonar \"-Dsonar.host.url=${SONAR_HOST_URL}\" \"-Dsonar.login=%SONAR_TOKEN%\""
+                        bat "docker run --rm --add-host host.docker.internal:host-gateway -v maven-repo:/root/.m2 -v \"%WORKSPACE%\":/app -w /app maven:3.8.6-eclipse-temurin-17 mvn sonar:sonar \"-Dsonar.host.url=${SONAR_HOST_URL}\" \"-Dsonar.login=%SONAR_TOKEN%\""
                     }
                 }
             }
@@ -67,14 +67,14 @@ pipeline {
         stage('Docker Push') {
             steps {
                 echo 'Pushing Docker image to Docker Registry...'
-                script {
-                    // Use Jenkins Docker Pipeline plugin — handles login internally via Java ProcessBuilder,
-                    // bypassing CMD/PowerShell entirely. No shell encoding issues with special characters.
-                    docker.withRegistry('', "${DOCKER_HUB_CREDENTIALS_ID}") {
-                        def dockerImage = docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_TAG}")
-                        dockerImage.push()
-                        dockerImage.push("latest")
-                    }
+                withCredentials([usernamePassword(
+                    credentialsId: "${DOCKER_HUB_CREDENTIALS_ID}",
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
+                    bat "docker push ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
+                    bat "docker push ${DOCKER_IMAGE_NAME}:latest"
                 }
             }
         }

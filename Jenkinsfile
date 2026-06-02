@@ -76,10 +76,12 @@ pipeline {
                         $password = $env:DOCKER_PASS
                         if ($password) { $password = $password.Trim() }
                         $username = $env:DOCKER_USER
-                        if ($username) { $username = $username.Trim() }
-                        
+                        if ($username) { $username = $username.Trim().ToLower() }
+
+                        Write-Output "Attempting docker login as: $username"
+
                         $passwdBytes = [System.Text.Encoding]::UTF8.GetBytes($password)
-                        
+
                         $si = New-Object System.Diagnostics.ProcessStartInfo
                         $si.FileName = "docker"
                         $si.Arguments = "login -u $username --password-stdin"
@@ -87,16 +89,16 @@ pipeline {
                         $si.RedirectStandardInput = $true
                         $si.RedirectStandardOutput = $true
                         $si.RedirectStandardError = $true
-                        
+
                         $p = [System.Diagnostics.Process]::Start($si)
                         $p.StandardInput.BaseStream.Write($passwdBytes, 0, $passwdBytes.Length)
                         $p.StandardInput.BaseStream.Flush()
                         $p.StandardInput.Close()
-                        
+
                         $stdout = $p.StandardOutput.ReadToEnd()
                         $stderr = $p.StandardError.ReadToEnd()
                         $p.WaitForExit()
-                        
+
                         Write-Output $stdout
                         if ($p.ExitCode -ne 0) {
                             Write-Error $stderr

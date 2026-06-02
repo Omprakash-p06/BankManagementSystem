@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Docker Credentials and Image details
         DOCKER_HUB_CREDENTIALS_ID = 'dockerhub-omprakash006'
-        DOCKER_IMAGE_NAME         = 'Omprakash006/bank-management-system'
+        DOCKER_IMAGE_NAME         = 'omprakash006/bank-management-system'
         DOCKER_TAG                = "${BUILD_NUMBER}"
 
 

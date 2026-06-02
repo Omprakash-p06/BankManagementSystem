@@ -74,7 +74,10 @@ pipeline {
                 )]) {
                     powershell '''
                         $password = $env:DOCKER_PASS
+                        if ($password) { $password = $password.Trim() }
                         $username = $env:DOCKER_USER
+                        if ($username) { $username = $username.Trim() }
+                        
                         $passwdBytes = [System.Text.Encoding]::UTF8.GetBytes($password)
                         
                         $si = New-Object System.Diagnostics.ProcessStartInfo

@@ -111,6 +111,22 @@ Notes:
 - `netlify.toml` includes clean URL redirects for the HTML pages.
 - Ensure the backend CORS configuration allows your Netlify domain.
 
+### Frontend: Vercel Deployment
+The frontend can also be hosted on Vercel using the configuration defined in `vercel.json`.
+
+1. Create a new project in Vercel and import this repository.
+2. Under **Build & Development Settings**, configure:
+   - **Build Command**: `node scripts/netlify-build.js`
+   - **Output Directory**: `src/main/webapp`
+3. Add an Environment Variable:
+   - **Key**: `BASE_URL`
+   - **Value**: `https://<your-backend-domain>/BankManagementSystem`
+4. Click **Deploy**.
+
+Notes:
+- `vercel.json` includes custom route rules and clean URLs for the HTML pages.
+- Ensure the backend CORS configuration allows your Vercel domain.
+
 ---
 
 ## 🔒 4. Dependency & Security Audits
